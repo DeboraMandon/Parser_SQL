@@ -2,12 +2,44 @@
 import pandas as pd
 import re
 import sqlparse
-
+import glob
 import warnings
+
+
+# Chemin du répertoire contenant les fichiers
+chemin_repertoire = "C:/Talend/TOS_DI-8.0.1/studio/workspace/"
+
+# Modèle pour les fichiers que vous souhaitez lire
+modele_fichier = "*_query.xlsx"
+
+# Utiliser glob pour obtenir la liste des fichiers correspondants au modèle
+chemin_fichiers = glob.glob(chemin_repertoire + modele_fichier)
+
+# Initialiser un DataFrame vide pour stocker les données de tous les fichiers
+df = pd.DataFrame()
 
 with warnings.catch_warnings(record=True):
     warnings.simplefilter("always")
-    df = pd.read_excel("C:/Talend/TOS_DI-8.0.1/studio/workspace/ATP_requete.xlsx", engine="openpyxl")
+
+# Boucle pour lire chaque fichier, ajouter une colonne avec le nom du fichier, et concaténer les données
+    for fichier in chemin_fichiers:
+        df_temp = pd.read_excel(fichier)
+        
+        # Extraire le nom du fichier (sans le chemin)
+        nom_fichier = fichier.split("\\")[-1]
+        nom_fichier= nom_fichier.split(".")[0]
+        
+        # Ajouter une colonne "Nom_Fichier" au DataFrame temporaire
+        df_temp = df_temp.assign(projet=nom_fichier)
+        
+        # Concaténer les données dans le DataFrame global
+        df = pd.concat([df, df_temp], ignore_index=True)
+
+print("Les fichiers excel contenant les requetes de projet sont téléchargés.")
+
+#with warnings.catch_warnings(record=True):
+    #warnings.simplefilter("always")
+    #df = pd.read_excel("C:/Talend/TOS_DI-8.0.1/studio/workspace/ATP_requete.xlsx", engine="openpyxl")
 
 #créer le dataframe à partir d'un fichier csv
 #df=pd.read_excel("C:/Talend/TOS_DI-8.0.1/studio/workspace/ATP_requete.xlsx")
@@ -62,8 +94,10 @@ def mettre_none_si_commence_par_parenthese(valeur):
         return None
     else:
         return valeur
-    
+
+
 # Lancement du traitement
+print("Parsing en cours d'exécution ! :)")
 
 # Appliquer la fonction personnalisée à chaque ligne de la colonne 'requete_sql'
 df['table'] = df['requete_sql'].apply(extraire_noms_tables)
@@ -99,4 +133,15 @@ df['table_2'].fillna(df['table'], inplace=True)
 # Supprimer la colonne "table"
 df.drop('table', axis=1, inplace=True)
 
-df.to_csv("C:/Talend/TOS_DI-8.0.1/studio/workspace/job_tables_sql.csv")
+#Remplacer les cellules vides de id_job par NC
+#df['id_job']=df['id_job'].fillna("NC")
+
+#Supprimer les retours à la ligne
+for column in df.columns:
+    df[column] = df[column].astype(str).str.replace('\n', ' ')
+    df[column] = df[column].astype(str).str.replace('\r', ' ')
+    df[column] = df[column].astype(str).str.replace(',', ';')
+
+df.to_csv("C:/Talend/TOS_DI-8.0.1/studio/workspace/job_tables_sql.csv", index=False)
+
+print("Le fichier csv est prêt pour être intégré au job J025 Talend -->")
