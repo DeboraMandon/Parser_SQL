@@ -1,0 +1,6 @@
+pandas
+openpyxl
+re
+sqlparse
+glob
+warnings
