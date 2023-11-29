@@ -1,8 +1,0 @@
-projet;requete_sql
-ATP;select * from (select nom, adresse from Immeuble where id=1) as Koudalou
-ATP;SELECT * FROM Table
-ATP;SELECT * FROM question WHERE q_id IN (SELECT r_fk_question_id FROM reponse WHERE r_date_ajout BETWEEN  2013-01-01  AND  2013-12-31 )
-ATP;SELECT sum(a.Population)FROM travail.communes64 AS a WHERE EXISTS(SELECT * FROM travail.communes64 AS b WHERE b.Population > 10)
-ATP;SELECT timestamp, log_id, severity, json_payload, resource, labels FROM TABLE WHERE timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR) AND log_id = cloudaudit.googleapis.com/data_access ORDER BY timestamp ASC LIMIT 100
-ATP; SELECT * FROM Orders WHERE CustomerID IN (SELECT CustomerID FROM Customers WHERE Country = 'USA' AND City IN (SELECT DISTINCT ShipCity FROM Shippers WHERE ShipperID IN (SELECT ShipperID FROM OrderDetails WHERE ProductID IN (SELECT ProductID FROM Products WHERE CategoryID = 1))))
-ATP;SELECT COUNT(count_table.mois) FROM(SELECT st.mois, st.pays, st.somme_transactions, stm.somme_transactions FROM (	SELECT EXTRACT(MONTH FROM t.date) AS mois, c.pays, SUM(t.montant) AS somme_transactions		FROM transaction t	INNER JOIN city cON t.ville = c.villeGROUP BY mois, c.pays) stINNER JOIN somme_transactions_mois stm ON st.mois = stm.mois AND st.pays = stm.pays WHERE st.somme_transactions != stm.somme_transactions ORDER BY st.mois ASC, st.pays ASC) AS count_table GROUP BY count_table.mois
