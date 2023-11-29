@@ -4,7 +4,7 @@ import re
 import sqlparse
 import glob
 import warnings
-
+import os 
 
 # Chemin du répertoire contenant les fichiers
 chemin_repertoire = "C:/Talend/TOS_DI-8.0.1/studio/workspace/"
@@ -35,14 +35,13 @@ with warnings.catch_warnings(record=True):
         # Concaténer les données dans le DataFrame global
         df = pd.concat([df, df_temp], ignore_index=True)
 
-print("Les fichiers excel contenant les requetes de projet sont téléchargés.")
+# Supprimer tous les fichiers Excel après le traitement
+for fichier in chemin_fichiers:
+    os.remove(fichier)
+    print(f'Le fichier {fichier} a été supprime.')
 
-#with warnings.catch_warnings(record=True):
-    #warnings.simplefilter("always")
-    #df = pd.read_excel("C:/Talend/TOS_DI-8.0.1/studio/workspace/ATP_requete.xlsx", engine="openpyxl")
+print("Tous les fichiers Excel ont ete traites et supprimes.")
 
-#créer le dataframe à partir d'un fichier csv
-#df=pd.read_excel("C:/Talend/TOS_DI-8.0.1/studio/workspace/ATP_requete.xlsx")
 
 #créer les fonctions regex
 def extraire_noms_tables(requete_sql):
@@ -97,7 +96,7 @@ def mettre_none_si_commence_par_parenthese(valeur):
 
 
 # Lancement du traitement
-print("Parsing en cours d'exécution ! :)")
+print("Parsing en cours d'execution ! :)  ------------")
 
 # Appliquer la fonction personnalisée à chaque ligne de la colonne 'requete_sql'
 df['table'] = df['requete_sql'].apply(extraire_noms_tables)
@@ -142,6 +141,13 @@ for column in df.columns:
     df[column] = df[column].astype(str).str.replace('\r', ' ')
     df[column] = df[column].astype(str).str.replace(',', ';')
 
+
+# Diviser les valeurs de la colonne contenant des points-virgules
+df['table_2'] = df['table_2'].str.split(';')
+
+# Utiliser la fonction explode pour déplier les listes résultantes
+df = df.explode('table_2')
+
 df.to_csv("C:/Talend/TOS_DI-8.0.1/studio/workspace/job_tables_sql.csv", index=False)
 
-print("Le fichier csv est prêt pour être intégré au job J025 Talend -->")
+print("Le fichier csv est pret pour etre integre au job J025 Talend -->")
