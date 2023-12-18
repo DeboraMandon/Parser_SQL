@@ -139,8 +139,11 @@ df.drop('table', axis=1, inplace=True)
 for column in df.columns:
     df[column] = df[column].astype(str).str.replace('\n', ' ')
     df[column] = df[column].astype(str).str.replace('\r', ' ')
-    df[column] = df[column].astype(str).str.replace(',', ';')
+    #df[column] = df[column].astype(str).str.replace(',', ';')
 
+    
+# Remplacer les virgules par des points virgules
+df['table_2'] = df['table_2'].astype(str).str.replace(',', ';')
 
 # Diviser les valeurs de la colonne contenant des points-virgules
 df['table_2'] = df['table_2'].str.split(';')
