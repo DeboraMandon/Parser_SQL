@@ -98,6 +98,9 @@ def mettre_none_si_commence_par_parenthese(valeur):
 # Lancement du traitement
 print("Parsing en cours d'execution ! :)  ------------")
 
+# Supprimer les requêtes inutiles
+df['requete_sql']= df['requete_sql'].replace("select id  name from employee", "requete non modifiee")
+
 # Appliquer la fonction personnalisée à chaque ligne de la colonne 'requete_sql'
 df['table'] = df['requete_sql'].apply(extraire_noms_tables)
 
